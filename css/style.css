@@ -1,0 +1,25 @@
+*,
+*::after,
+*::before {
+margin: 0;
+padding: 0;
+/* box-sizing: inherit; */
+}
+
+body, html {
+    height: 100%;
+    overflow: hidden;
+}
+
+.bg {
+background-image: url("https://cdn.pixabay.com/photo/2016/11/14/05/26/children-1822701_960_720.jpg");
+height: 100%;
+background-position: center;
+background-repeat: no-repeat;
+background-size: cover;
+}
+
+input {
+    border : 1px solid black;
+    border-radius: 5px;
+}
