@@ -1,10 +1,18 @@
 <?php
 
-class Character
+abstract class Character
 {
-    private $id;
-    private $name;
-    private $damages;
+    protected $id;
+    protected $name;
+    protected $damages;
+    protected $level;
+    protected $xp;
+    protected $force;
+    protected $hitsCount;
+    protected $lastHit;
+    protected $nextHit;
+    protected $classType;
+    public $token = false;
 
     const HIT_MYSELF = 1;
     const CHARACTER_KILLED = 2;
@@ -25,14 +33,22 @@ class Character
                 $this->$method($value);
             }
         }
-        // $this->setName($characterRow['name']);
-        // $this->setDamages($characterRow['damages']);
     }
+
 
 // --- Getters and Setters ---
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setId($id)
+    {
+        $id = (int) $id;
+
+        if ($id > 0) {
+            $this->id = $id;
+        }
     }
 
     public function getName()
@@ -55,5 +71,159 @@ class Character
         if ($damages >= 0 && $damages <= 100) {
             $this->damages = $damages;
         }
+    }
+
+    public function getLevel()
+    {
+        return $this->level;
+    }
+    
+    public function setLevel($level) 
+    {
+        $this->level = $level;
+    }
+
+    public function levelUp()
+    {
+        if ($this->xp >= 15) {
+            $this->level += 1;
+            $this->xp = 0;
+            $this->increaseStrength();
+        }
+    }
+
+    public function getXp()
+    {
+        return $this->xp;
+    }
+
+    public function setXp($xp)
+    {
+        $this->xp = $xp;
+    }
+
+    public function increaseXp()
+    {
+        $this->xp += 1;
+    }
+
+    public function getStrength()
+    {
+        return $this->strength;
+    }
+
+    public function setStrength($strength)
+    {
+        $this->strength = $strength;
+    }
+    
+    public function increaseStrength()
+    {
+        $this->strength += 1;
+    }
+
+    public function getHitsCount()
+    {
+        return $this->hitsCount;
+    }
+
+    public function setHitsCount($hitsCount)
+    {
+        $this->hitsCount = $hitsCount;
+    }
+
+    public function increaseHitsCount()
+    {
+        $this->hitsCount += 1;
+    }
+
+    public function getLastHit()
+    {
+        return $this->lastHit;
+    }
+
+    public function setLastHit($lastHit)
+    {
+        $this->lastHit = $lastHit;
+    }
+
+    public function getNextHit()
+    {
+        return $this->nextHit;
+    }
+
+    public function changeHitDate()
+    {
+        $this->lastHit = date('Y-m-d H:i:s');
+    }
+
+    public function changeNextHit()
+    {
+        $hitDate = new DateTime($this->getLastHit());
+        $hitDate->add(new DateInterval('PT2M'));
+        // $hitDate->add(new DateInterval('P1D'));
+        $nextDate = $hitDate->format('Y-m-d H:i:s');
+        $this->nextHit = $nextDate;
+    }
+
+    public function compareDates($lastHit, $nextDate)
+    {
+        if ($lastHit < $nextDate) {
+            return 'dateNotOk';
+        } else {
+            $this->hitsCount = 0;
+            return 'dateOk';
+        }
+    }
+
+    public function switchToken()
+    {
+        if ($this->token === true) {
+            $this->token = false;
+        } else {
+            $this->token = true;
+        }
+    }
+
+    public function getClassType()
+    {
+        return $this->classType;
+    }
+
+    public function setClassType($classType)
+    {
+        $this->classType = $classType;
+    }
+
+
+    public function hit(Character $character) 
+    {
+        if ($character->getId() === $this->id) {
+            return self::HIT_MYSELF;
+        } else {
+            $this->increaseXp();
+            $this->levelUp();
+            $this->increaseHitsCount();
+            $this->changeHitDate();
+            if ($this->getHitsCount() >= 3) {
+                if ($this->token === false) {
+                    $this->changeNextHit();
+                } 
+                $this->switchToken();
+            }
+            return $character->takeDamage($this->strength, $this->classType);
+        }
+        
+    }
+
+    public function takeDamage($str, $classType)
+    {
+        $this->damages += (5 + $str);
+
+        if ($this->damages >= 100) {
+            return self::CHARACTER_KILLED;
+        }
+
+        return self::CHARACTER_HIT;
     }
 }

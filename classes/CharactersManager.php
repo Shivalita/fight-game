@@ -12,7 +12,9 @@ class CharactersManager
 // --- Select all characters ---
     public function all()
     {
-        $charactersStatement = $this->db->query('SELECT * FROM characters');
+        $charactersStatement = $this->db->query(
+            'SELECT * FROM characters'
+        );
         $charactersRow = $charactersStatement->fetchAll();
         $characters = [];
 
@@ -28,23 +30,49 @@ class CharactersManager
 // --- CREATE --- 
 public function create(Character $character)
 {
-    $addCharacterQuery = $this->db->prepare('INSERT INTO characters(name)
-    VALUES(:name)');
-    $addCharacterQuery->bindValue(':name', $character->getName());
+    $addCharacterQuery = $this->db->prepare(
+        'INSERT INTO characters(name, classType)
+        VALUES(:name, :classType)'
+    );
+
+    $addCharacterQuery->bindValue(
+        ':name', $character->getName()
+    );
+    $addCharacterQuery->bindValue(
+        ':classType', $character->getClassType()
+    );
+
     $addCharacterQuery->execute();
 
     $character->hydrate([
         'id' => $this->db->lastInsertId(),
-        'damages' =>  0
+        'damages' =>  0,
+        'level' =>  1,
+        'xp' =>  0,
+        'strength' =>  1,
+        'hitsCount' => 0,
+        'lastHit' => '2020-05-26 00:00:00',
+        'nextHit' => '2020-05-26 00:00:00'
     ]);
 }
     
 // --- UPDATE --- 
     public function update(Character $character)
     {
-       $updateChatacterQuery = $this->db->prepare('UPDATE characters SET damages = ? WHERE id = ?');
+       $updateChatacterQuery = $this->db->prepare(
+           'UPDATE characters 
+            SET damages = ?, level = ?, xp = ?, strength = ?, hitsCount = ?, 
+            lastHit = ?, nextHit = ? 
+            WHERE id = ?'
+        );
        $updateChatacterQuery->execute([
            $character->getDamages(),
+           $character->getLevel(),
+           $character->getXp(),
+           $character->getStrength(),
+           $character->getHitsCount(),
+           $character->getLastHit(),
+           $character->getNextHit(),
            $character->getId()
        ]); 
     }
@@ -52,7 +80,9 @@ public function create(Character $character)
 // --- DELETE --- 
     public function delete(Character $character)
     {
-        $deleteCharacterQuery = $this->db->prepare('DELETE FROM characters WHERE id = ?');
+        $deleteCharacterQuery = $this->db->prepare(
+            'DELETE FROM characters WHERE id = ?'
+        );
         $deleteCharacterQuery->execute([$character->getId()]);
     }
 
@@ -60,56 +90,88 @@ public function create(Character $character)
     public function get($request)
     {
         if (is_int($request)) {
-            $getCharacterData = $this->db->prepare('SELECT * FROM characters WHERE id = ?');
+            $getCharacterData = $this->db->prepare(
+                'SELECT * FROM characters WHERE id = ?'
+            );
             $getCharacterData->execute([$request]);
             $characterData = $getCharacterData->fetch(PDO::FETCH_ASSOC);
-
-            return $characterData;
+            
         } else {
-            $getCharacterData = $this->db->prepare('SELECT * FROM characters WHERE name = ?');
+            $getCharacterData = $this->db->prepare(
+                'SELECT * FROM characters WHERE name = ?'
+            );
             $getCharacterData->execute([$request]);
             $characterData = $getCharacterData->fetch(PDO::FETCH_ASSOC);
+            
+        }
 
-            return $characterData;
+        switch ($characterData['classType']) {
+            case 'warrior' : 
+                return new Warrior($characterData);
+                break;
+            case 'mage' : 
+                return new Mage($characterData);
+                break;
+            case 'archer' : 
+                return new Archer($characterData);
+                break;
+            default : 
+                return NULL;
         }
     }
 
  // --- COUNT --- 
     public function count()
     {
-        $charactersCountQuery = $this->db->query('SELECT * from characters');
+        $charactersCountQuery = $this->db->query(
+            'SELECT * from characters'
+        );
         $charactersCount = $charactersCountQuery->fetchAll(PDO::FETCH_ASSOC);
 
         return count($charactersCount);
     }
 
 // --- GET LIST --- 
-    public function getList()
+    public function getList($name)
     {
-        $charactersList = [];
+        $opponents = [];
 
-        $charactersListQuery = $this->db->query('SELECT * FROM characters');
-        $names = $charactersListQuery->fetchAll(PDO::FETCH_ASSOC);
+        $opponentsQuery = $this->db->prepare(
+            'SELECT * FROM characters WHERE name <> :name ORDER BY name'
+        );
+        $opponentsQuery->execute([':name' => $name]);
 
-        foreach ($names as $name) {
-            array_push($charactersList, $name);
+        while ($characterData = $opponentsQuery->fetch(PDO::FETCH_ASSOC)) {
+            switch ($characterData['classType']) {
+                case 'warrior' : 
+                    $opponents[] = new Warrior($characterData);
+                    break;
+                case 'mage' : 
+                    $opponents[] = new Mage($characterData);
+                    break;  
+                case 'archer' : 
+                    $opponents[] = new Archer($characterData);
+                    break;
+            }
         }
-
-        return $charactersList;
+        return $opponents;
     }
 
-// --- GET LIST --- 
+// --- CHARACTER EXISTS --- 
     public function characterExists($character)
     {
-        $verifyCharacterExists = $this->db->prepare('SELECT * FROM characters WHERE name = ?');
-        $verifyCharacterExists->execute([$character]);
-        $characterExists = $verifyCharacterExists->fetch(PDO::FETCH_ASSOC);
-
-        if ($characterExists) {
-            return $characterExists['name'];
-        } else {
-            
+        if (is_int($character)) {
+            return (bool) $this->db->query(
+                'SELECT COUNT(*) FROM characters WHERE id = '
+                .$character)->fetchColumn();
         }
+
+        $verifyCharacterExists = $this->db->prepare(
+            'SELECT COUNT(*) FROM characters WHERE name = :name'
+        );
+        $verifyCharacterExists->execute([':name' => $character]);
+        
+        return (bool) $verifyCharacterExists->fetchColumn();           
     }
 
 }

@@ -19,7 +19,72 @@ background-repeat: no-repeat;
 background-size: cover;
 }
 
-input {
-    border : 1px solid black;
+input, select {
+    border: 2px solid rgba(0, 0, 0, 0.8);
     border-radius: 5px;
+    padding: 0.2vw 0.3vw 0.2vw 0.3vw;
+}
+
+select {
+    width: 5vw;
+}
+
+.btn {
+    border: 1px solid white;
+    border-radius: 5px;
+    padding-bottom: 0.4vw;
+}
+
+h3, legend {
+    font-weight: 600;
+}
+
+h6 {
+    font-size: 1vw;
+}
+
+.card {
+    padding: 1vw;
+    margin-top: 2vw;
+}
+
+.cardSelect {
+    background-color: rgba(36, 36, 36, 0.5);
+    border: 2px solid rgba(19, 19, 19, 0.5);
+    color: white;
+    font-weight: 600;
+}
+
+.cardFighter {
+    background-color: rgba(36, 36, 36, 0.5);
+    border: 2px solid rgba(19, 19, 19, 0.5);
+    color: white;
+    font-weight: 600;
+}
+
+.cardWarrior {
+    background-color: rgba(199, 30, 30, 0.5);
+    border: 2px solid rgba(163, 23, 23, 0.5);
+    color: white;
+    font-weight: 600;
+}
+
+.cardMage {
+    background-color: rgba(0, 174, 255, 0.5);
+    border: 2px solid rgba(0, 117, 172, 0.5);
+    color: white;
+    font-weight: 600;
+}
+
+.cardArcher {
+    background-color: rgba(28, 199, 42, 0.5);
+    border: 2px solid rgba(18, 128, 27, 0.5);
+    color: white;
+    font-weight: 600;
+}
+
+.cardDefault {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(128, 128, 128, 0.5);
+    font-weight: 600;
 }
