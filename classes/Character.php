@@ -4,7 +4,7 @@ abstract class Character
 {
     protected $id;
     protected $name;
-    protected $damages;
+    protected $health;
     protected $level;
     protected $xp;
     protected $force;
@@ -12,6 +12,7 @@ abstract class Character
     protected $lastHit;
     protected $nextHit;
     protected $classType;
+    protected $strong;
     public $token = false;
 
     const HIT_MYSELF = 1;
@@ -61,15 +62,15 @@ abstract class Character
         $this->name = $name;
     }
 
-    public function getDamages()
+    public function getHealth()
     {
-        return $this->damages;
+        return $this->health;
     }
 
-    public function setDamages(int $damages)
+    public function setHealth(int $health)
     {
-        if ($damages >= 0 && $damages <= 100) {
-            $this->damages = $damages;
+        if ($health >= 0 && $health <= 100) {
+            $this->health = $health;
         }
     }
 
@@ -85,7 +86,7 @@ abstract class Character
 
     public function levelUp()
     {
-        if ($this->xp >= 15) {
+        if ($this->xp >= 10) {
             $this->level += 1;
             $this->xp = 0;
             $this->increaseStrength();
@@ -160,8 +161,8 @@ abstract class Character
     public function changeNextHit()
     {
         $hitDate = new DateTime($this->getLastHit());
-        $hitDate->add(new DateInterval('PT2M'));
-        // $hitDate->add(new DateInterval('P1D'));
+        // $hitDate->add(new DateInterval('PT2M'));
+        $hitDate->add(new DateInterval('P1D'));
         $nextDate = $hitDate->format('Y-m-d H:i:s');
         $this->nextHit = $nextDate;
     }
@@ -195,10 +196,35 @@ abstract class Character
         $this->classType = $classType;
     }
 
-
-    public function hit(Character $character) 
+    public function getStrong()
     {
-        if ($character->getId() === $this->id) {
+        return $this->strong;
+    }
+
+    public function setStrong($strong)
+    {
+        $this->strong = $strong;
+    }
+
+    public function defineStrong()
+    {
+        switch ($this->classType) {
+            case 'warrior' : 
+                return 'mage';
+                break;
+            case 'mage' : 
+                return 'archer';
+                break;
+            case 'archer' : 
+                return 'warrior';
+                break;
+        }
+    }
+
+
+    public function hit(Character $opponent) 
+    {
+        if ($opponent->getId() === $this->id) {
             return self::HIT_MYSELF;
         } else {
             $this->increaseXp();
@@ -211,16 +237,15 @@ abstract class Character
                 } 
                 $this->switchToken();
             }
-            return $character->takeDamage($this->strength, $this->classType);
+            return $opponent->takeDamage($this->strength, $this->classType);
         }
-        
     }
 
     public function takeDamage($str, $classType)
     {
-        $this->damages += (5 + $str);
+        $this->health -= (5 + $str);
 
-        if ($this->damages >= 100) {
+        if ($this->health <= 0) {
             return self::CHARACTER_KILLED;
         }
 

@@ -14,14 +14,15 @@ body, html {
 .bg {
 background-image: url("https://cdn.pixabay.com/photo/2016/11/14/05/26/children-1822701_960_720.jpg");
 height: 100%;
-background-position: center;
+background-position: 50% 70%;
 background-repeat: no-repeat;
-background-size: cover;
+background-size: 120%;
 }
 
 input, select {
-    border: 2px solid rgba(0, 0, 0, 0.8);
-    border-radius: 5px;
+    border: 1px solid rgba(15, 15, 15, 0.8);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     padding: 0.2vw 0.3vw 0.2vw 0.3vw;
 }
 
@@ -29,62 +30,132 @@ select {
     width: 5vw;
 }
 
+a {
+    color: white;
+}
+
+a:hover {
+    color: rgb(51, 51, 51);
+    text-decoration: none;
+}
+
 .btn {
-    border: 1px solid white;
-    border-radius: 5px;
-    padding-bottom: 0.4vw;
+  position: relative;
+  font-size: 0.8vw;
+  background: rgb(51, 51, 51);
+  color: white;
+  border: 1px solid white;
+  border-radius: 4px;
+  padding-bottom: 0.3vw;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  transition-duration: 0.2s ease;
+}
+
+.btn:hover {
+
+  color: rgb(51, 51, 51);
+  background: white;
+  border: 1px solid rgb(51, 51, 51);
 }
 
 h3, legend {
     font-weight: 600;
 }
 
-h6 {
-    font-size: 1vw;
+h3, h4, h5, legend {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5), 2px 2px 2px rgba(14, 14, 14, 0.5);
+}
+
+.hp {
+    font-size: 0.7vw;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    margin-top: 0.1vw;
+}
+
+.letsFight {
+    margin-top: 5vw;
+}
+
+.opponents{
+    margin-top: 3vw;
 }
 
 .card {
     padding: 1vw;
-    margin-top: 2vw;
-}
-
-.cardSelect {
-    background-color: rgba(36, 36, 36, 0.5);
-    border: 2px solid rgba(19, 19, 19, 0.5);
+    margin-top: 1vw;
+    border: 1px solid rgba(26, 26, 26, 0.5);
+    box-shadow:0 0 3px rgba(0, 0, 0, 0.5);
     color: white;
     font-weight: 600;
 }
 
-.cardFighter {
-    background-color: rgba(36, 36, 36, 0.5);
-    border: 2px solid rgba(19, 19, 19, 0.5);
-    color: white;
-    font-weight: 600;
+.cardDark {
+    background-color: rgba(36, 36, 36, 0.7);
 }
 
 .cardWarrior {
-    background-color: rgba(199, 30, 30, 0.5);
-    border: 2px solid rgba(163, 23, 23, 0.5);
-    color: white;
-    font-weight: 600;
+    background-color: rgba(204, 39, 39, 0.7);
 }
 
 .cardMage {
-    background-color: rgba(0, 174, 255, 0.5);
-    border: 2px solid rgba(0, 117, 172, 0.5);
-    color: white;
-    font-weight: 600;
+    background-color: rgba(37, 175, 240, 0.7);
 }
 
 .cardArcher {
-    background-color: rgba(28, 199, 42, 0.5);
-    border: 2px solid rgba(18, 128, 27, 0.5);
-    color: white;
-    font-weight: 600;
+    background-color: rgba(48, 192, 60, 0.7);
 }
 
 .cardDefault {
-    background-color: rgba(255, 255, 255, 0.5);
-    border: 2px solid rgba(128, 128, 128, 0.5);
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.cardDark:hover {
+    background-color: rgba(36, 36, 36, 0.9);
+}
+
+.cardWarrior:hover {
+    background-color: rgba(204, 39, 39, 0.9);
+}
+
+.cardMage:hover {
+    background-color: rgba(37, 175, 240, 0.9);
+}
+
+.cardArcher:hover {
+    background-color: rgba(48, 192, 60, 0.9);
+}
+
+.cardDefault:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.cardAnim {
+    transform: scale(1);
+    transition: 0.1s ease; 
+}
+
+.cardAnim:hover {
+    transform: scale(1.05);
+}
+
+.progress {
+    border: 1px solid rgba(26, 26, 26, 0.7);
+    box-shadow:0 0 1px rgba(0, 0, 0, 0.5);
+    border-radius: 30px; 
+}
+
+.progress-bar {
+    color: rgba(26, 26, 26, 0.9);
     font-weight: 600;
+}
+
+.damages {
+    width: 5vw;
+    font-size: 0.6vw;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    background-color: rgba(36, 36, 36, 0.9);
+    border: 1px solid white;
+    box-shadow:0 0 1px rgba(0, 0, 0, 0.5);
+    border-radius: 30px;
+    padding: 0.1vw 0vw 0.2vw 0vw;
 }

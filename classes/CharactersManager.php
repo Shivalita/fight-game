@@ -25,6 +25,15 @@ class CharactersManager
         return $characters;
     }
 
+    public function getAllFighters()
+    {
+        $allFightersStatement = $this->db->query(
+            'SELECT * FROM characters'
+        );
+        $allFighters = $allFightersStatement->fetchAll();
+        return $allFighters;
+    }
+
 // --- CRUD AND OTHER METHODS---  
 
 // --- CREATE --- 
@@ -46,7 +55,7 @@ public function create(Character $character)
 
     $character->hydrate([
         'id' => $this->db->lastInsertId(),
-        'damages' =>  0,
+        'health' =>  100,
         'level' =>  1,
         'xp' =>  0,
         'strength' =>  1,
@@ -61,12 +70,12 @@ public function create(Character $character)
     {
        $updateChatacterQuery = $this->db->prepare(
            'UPDATE characters 
-            SET damages = ?, level = ?, xp = ?, strength = ?, hitsCount = ?, 
+            SET health = ?, level = ?, xp = ?, strength = ?, hitsCount = ?, 
             lastHit = ?, nextHit = ? 
             WHERE id = ?'
         );
        $updateChatacterQuery->execute([
-           $character->getDamages(),
+           $character->getHealth(),
            $character->getLevel(),
            $character->getXp(),
            $character->getStrength(),
