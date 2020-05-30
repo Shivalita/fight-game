@@ -21,4 +21,9 @@ class Mage extends Character
     {
         $this->xp += 2;
     }
+
+    public function increaseMagic()
+    {
+        $this->magic += 2;
+    }
 }

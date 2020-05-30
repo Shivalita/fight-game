@@ -25,15 +25,6 @@ class CharactersManager
         return $characters;
     }
 
-    public function getAllFighters()
-    {
-        $allFightersStatement = $this->db->query(
-            'SELECT * FROM characters'
-        );
-        $allFighters = $allFightersStatement->fetchAll();
-        return $allFighters;
-    }
-
 // --- CRUD AND OTHER METHODS---  
 
 // --- CREATE --- 
@@ -59,6 +50,7 @@ public function create(Character $character)
         'level' =>  1,
         'xp' =>  0,
         'strength' =>  1,
+        'magic' =>  1,
         'hitsCount' => 0,
         'lastHit' => '2020-05-26 00:00:00',
         'nextHit' => '2020-05-26 00:00:00'
@@ -70,8 +62,8 @@ public function create(Character $character)
     {
        $updateChatacterQuery = $this->db->prepare(
            'UPDATE characters 
-            SET health = ?, level = ?, xp = ?, strength = ?, hitsCount = ?, 
-            lastHit = ?, nextHit = ? 
+            SET health = ?, level = ?, xp = ?, strength = ?, magic = ?,
+            hitsCount = ?, lastHit = ?, nextHit = ? 
             WHERE id = ?'
         );
        $updateChatacterQuery->execute([
@@ -79,6 +71,7 @@ public function create(Character $character)
            $character->getLevel(),
            $character->getXp(),
            $character->getStrength(),
+           $character->getMagic(),
            $character->getHitsCount(),
            $character->getLastHit(),
            $character->getNextHit(),
@@ -181,6 +174,16 @@ public function create(Character $character)
         $verifyCharacterExists->execute([':name' => $character]);
         
         return (bool) $verifyCharacterExists->fetchColumn();           
+    }
+
+// --- GET ALL CHARACTERS --- 
+    public function getAllFighters()
+    {
+        $allFightersStatement = $this->db->query(
+            'SELECT * FROM characters'
+        );
+        $allFighters = $allFightersStatement->fetchAll();
+        return $allFighters;
     }
 
 }

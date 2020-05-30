@@ -4,16 +4,16 @@ abstract class Character
 {
     protected $id;
     protected $name;
+    protected $classType;
     protected $health;
     protected $level;
     protected $xp;
-    protected $force;
+    protected $strength;
+    protected $magic;
     protected $hitsCount;
     protected $lastHit;
     protected $nextHit;
-    protected $classType;
     protected $strong;
-    public $token = false;
 
     const HIT_MYSELF = 1;
     const CHARACTER_KILLED = 2;
@@ -74,6 +74,21 @@ abstract class Character
         }
     }
 
+    public function getXp()
+    {
+        return $this->xp;
+    }
+
+    public function setXp($xp)
+    {
+        $this->xp = $xp;
+    }
+
+    public function increaseXp()
+    {
+        $this->xp += 1;
+    }
+
     public function getLevel()
     {
         return $this->level;
@@ -90,22 +105,8 @@ abstract class Character
             $this->level += 1;
             $this->xp = 0;
             $this->increaseStrength();
+            $this->increaseMagic();
         }
-    }
-
-    public function getXp()
-    {
-        return $this->xp;
-    }
-
-    public function setXp($xp)
-    {
-        $this->xp = $xp;
-    }
-
-    public function increaseXp()
-    {
-        $this->xp += 1;
     }
 
     public function getStrength()
@@ -121,6 +122,21 @@ abstract class Character
     public function increaseStrength()
     {
         $this->strength += 1;
+    }
+
+    public function getMagic()
+    {
+        return $this->magic;
+    }
+
+    public function setMagic($magic)
+    {
+        $this->magic = $magic;
+    }
+    
+    public function increaseMagic()
+    {
+        $this->magic += 1;
     }
 
     public function getHitsCount()
@@ -161,28 +177,19 @@ abstract class Character
     public function changeNextHit()
     {
         $hitDate = new DateTime($this->getLastHit());
-        // $hitDate->add(new DateInterval('PT2M'));
-        $hitDate->add(new DateInterval('P1D'));
+        $hitDate->add(new DateInterval('PT2M'));
+        // $hitDate->add(new DateInterval('P1D'));
         $nextDate = $hitDate->format('Y-m-d H:i:s');
         $this->nextHit = $nextDate;
     }
 
-    public function compareDates($lastHit, $nextDate)
+    public function compareDates($currentDate, $nextDate)
     {
-        if ($lastHit < $nextDate) {
-            return 'dateNotOk';
-        } else {
+        if ($currentDate >= $nextDate || $this->getNextHit() === NULL) {
             $this->hitsCount = 0;
             return 'dateOk';
-        }
-    }
-
-    public function switchToken()
-    {
-        if ($this->token === true) {
-            $this->token = false;
         } else {
-            $this->token = true;
+            return 'dateNotOk';
         }
     }
 
@@ -230,13 +237,8 @@ abstract class Character
             $this->increaseXp();
             $this->levelUp();
             $this->increaseHitsCount();
+            $this->changeNextHit();
             $this->changeHitDate();
-            if ($this->getHitsCount() >= 3) {
-                if ($this->token === false) {
-                    $this->changeNextHit();
-                } 
-                $this->switchToken();
-            }
             return $opponent->takeDamage($this->strength, $this->classType);
         }
     }
@@ -250,5 +252,19 @@ abstract class Character
         }
 
         return self::CHARACTER_HIT;
+    }
+
+    public function healPower()
+    {
+        return (5 + $this->magic);
+    }
+
+    public function heal()
+    {
+        $this->health += $this->healPower();
+        if ($this->health > 100) {
+            $this->health = 100;
+        }
+        $this->increaseHitsCount();
     }
 }

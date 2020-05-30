@@ -10,6 +10,7 @@
 <title>Fight Game</title>
 </head>
 <body>
+    
 <div class="container-fluid bg">
 <?php
 include('config/db.php');
@@ -29,6 +30,8 @@ $manager = new CharactersManager($db);
 if (isset($_SESSION['character'])) {
     $character = $_SESSION['character'];
 }
+
+$datetime = date('Y-m-d H:i:s');
 
 if (isset($_POST['create']) && !empty($_POST['name'])) {
     switch ($_POST['classType']) {
@@ -51,10 +54,12 @@ if (isset($_POST['create']) && !empty($_POST['name'])) {
         unset($character);
     } else {
         $manager->create($character);
+        $manager->update($character);
     }
-} else if (isset($_POST['select']) && !empty($_POST['name'])) {
-    if ($manager->characterExists(ucfirst($_POST['name']))) {
-        $character = $manager->get(ucfirst($_POST['name']));
+} else if (isset($_POST['select'])) {
+    if ($manager->characterExists(ucfirst($_POST['fighter']))) {
+        $character = $manager->get(ucfirst($_POST['fighter']));
+        $character->compareDates($datetime, $character->getNextHit());
     } else {
         $message = 'This character doesn\'t exist.';
     }
@@ -63,19 +68,38 @@ if (isset($_POST['create']) && !empty($_POST['name'])) {
         $message = 'Please create a character or login.';
     } else if (!$manager->characterExists((int) $_POST['hit'])) {
             $message = 'The character you want to hit doesn\'t exist !';
-    } else if ($character->getHitsCount() >= 3) {
+    } else if (
+        (($character->getClassType() === 'warrior') && ($character->getHitsCount() >= 3)) || 
+        (($character->getClassType() === 'mage') && ($character->getHitsCount() >= 3)) || 
+        (($character->getClassType() === 'archer') && ($character->getHitsCount() >= 5))
+        ) {
         $character->changeHitDate();
-        if ($character->compareDates($character->getLastHit(), $character->getNextHit()) === 'dateNotOk') {
+        if ($character->compareDates($datetime, $character->getNextHit()) === 'dateNotOk') {
             $message = 
-            'You gave the maximum amount of hits today.</br>
-            You\'ll be able to fight again starting '.$character->getNextHit();
+            'You are out of action points.</br>';
         } else {
             doHit();
         }
     } else {
         doHit();
     }
-} 
+} else if (isset($_POST['heal'])) {
+    if (!isset($character)) {
+        $message = 'Please create a character or login.';
+    } else if ($character->getHealth() === 100) {
+        $message = 'You are already full-life.';
+    } else if (
+        (($character->getClassType() === 'warrior') && ($character->getHitsCount() >= 3)) || 
+        (($character->getClassType() === 'mage') && ($character->getHitsCount() >= 3)) || 
+        (($character->getClassType() === 'archer') && ($character->getHitsCount() >= 5))
+        ) {
+        $message = 
+            'You are out of action points.</br>';
+    } else {
+        $character->heal();
+        $manager->update($character);
+    }
+}
 
 function doHit() {
     global $manager;
@@ -107,17 +131,18 @@ function doHit() {
             break;
     }
 }
-
-    echo ('
-            <div class="row">
-                <div class="col-12 pt-3">
-                    <h6 class="text-white">
-    ');
+?>
+        <div class="row"<?php if (!isset($message)){echo 'style="visibility:hidden;"';}?>>
+            <div class="col-12 pt-3">
+                <h6 class="text-white">
+   
+    <?php
     if (isset($message)) {
         echo ($message);      
     } else {
-        echo (' ');
+        echo ('Enjoy the fight !');
     }
+    
     echo ('
             </h6>
                 </div>
@@ -129,10 +154,18 @@ function doHit() {
         ?>
         <div class="container character">
             <div class="row justify-content-around">
-                <div class="col-6 card cardDark mt-4">
-                    <legend class="mb-4 text-center"><?=ucfirst($character->getName())?></legend>
+                <div class="col-6 card cardDark mt-2">
+                    <div class="row mb-2">
+                        <div class="col-4 offset-4 text-center">
+                            <legend class="mb-3 text-center"><?=ucfirst($character->getName())?></legend>
+                        </div>
+                        <div class="col-2 offset-2 text-center">
+                            <button class="btn btn-sm"><a href="?logout=1">Logout</a></button>
+                        </div>
+                    </div>
                     <div class="row justify-content-around">
                         <div class="col-10 text-center">
+                            <h6>Level <?=$character->getLevel()?></h6>
                             <div class="progress">
                                 <?php
                                 if ($character->getHealth() < 25) {
@@ -158,16 +191,16 @@ function doHit() {
                             </div>
                         </div>
 
-                        <div class="col-5 text-center mt-1">
+                        <div class="col-8 text-center mt-1">
                             <div class="progress">
-                                <div class="progress-bar bg-warning" role="progressbar" aria-valuenow="<?=$character->getXp()?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=($character->getXp() *10)?>%">
+                                <div class="progress-bar bg-info" role="progressbar" aria-valuenow="<?=$character->getXp()?>" aria-valuemin="0" aria-valuemax="100" style="width:<?=($character->getXp() *10)?>%">
                                     XP <?=$character->getXp()?>/10
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row justify-content-around mt-2">
+                    <div class="row justify-content-around mt-2 mb-3">
                         <div class="col-12 text-center">
                             <h5 class="mt-1"><?=ucfirst($character->getClassType())?></h5>
                         </div>
@@ -175,34 +208,46 @@ function doHit() {
 
                     <div class="row justify-content-around">
                         <div class="col-6 text-center">
-                            <h6>Level : <?=$character->getLevel()?></h6>
+                            <h6>Strength <?=$character->getStrength()?></h6>
                         </div>
                         <div class="col-6 text-center">
-                            <h6>Strength : <?=$character->getStrength()?></h6>
+                            <h6>Magic <?=$character->getMagic()?></h6>
                         </div>
                     </div>
 
                     <div class="row justify-content-around mt-3 mb-1">
                         <div class="col-12 text-center">
                         <?php
+                        if (
+                            (($character->getClassType() === 'warrior') && ($character->getHitsCount() >= 3)) || 
+                            (($character->getClassType() === 'mage') && ($character->getHitsCount() >= 3)) || 
+                            (($character->getClassType() === 'archer') && ($character->getHitsCount() >= 5))
+                            ) {
+                            $character->compareDates($datetime, $character->getNextHit());
+                        }
                             if ($character->getClassType() === 'archer') { 
-                                echo ('<h6>Hits count : '.$character->getHitsCount().'/5</h6>');
+                                echo ('<h6>Action Points '.$character->getHitsCount().'/5</h6>');
                             } else {
-                                echo ('<h6>Hits count : '.$character->getHitsCount().'/3</h6>');
+                                echo ('<h6>Action Points '.$character->getHitsCount().'/3</h6>');
                             }
                         ?>
                         </div>
                     </div>
 
-                    <div class="row justify-content-around">
-                        <div class="col-12 text-center">
-                            <h6>Last hit : <?=$character->getLastHit()?></h6>
+                    <div class="row justify-content-around mb-3">
+                        <div class="col-12 text-center"<?php if ((($character->getClassType() === 'warrior') && ($character->getHitsCount() < 3)) || 
+                                                                (($character->getClassType() === 'mage') && ($character->getHitsCount() < 3)) || 
+                                                                (($character->getClassType() === 'archer') && ($character->getHitsCount() < 5)) || date('Y-m-d H:i:s') > $character->getNextHit() || $character->getNextHit() === NULL){ echo 'style="visibility:hidden;"';}?>>
+                            <h6>Reset : <?=$character->getNextHit()?></h6>
                         </div>
                     </div>
 
-                    <div class="row justify-content-around mt-3">
-                        <div class="col-12 text-center">
-                            <button class="btn btn-sm"><a href="?logout=1">Logout</a></button>
+                    <div class="row justify-content-around">
+                        <div class="col-4 text-center">
+                            <form action="" method="POST">
+                                <input type="hidden" name="heal" value="heal">
+                                <button id="healBtn" type="submit" class="btn btn-sm">Heal <?=$character->healPower()?> HP</button>
+                            </form>
                         </div>
                     </div>
 
@@ -212,7 +257,7 @@ function doHit() {
         
 
         <div class="container-fluid opponents">
-            <div class="row justify-content-around mt-3">
+            <div class="row justify-content-around">
                 <?php
                 $opponents = $manager->getList($character->getName());
 
@@ -223,22 +268,23 @@ function doHit() {
                     foreach ($opponents as $opponent) {
                         switch ($opponent->getClassType()) {
                             case 'warrior' : 
-                                echo ('<div class="col-2 card cardWarrior cardAnim mx-2">');
+                                echo ('<div class="col-2 card cardWarrior cardAnim mx-2 mb-4">');
                                 break;
                             case 'mage' : 
-                                echo ('<div class="col-2 card cardMage cardAnim mx-2">');
+                                echo ('<div class="col-2 card cardMage cardAnim mx-2 mb-4">');
                                 break;
                             case 'archer' : 
-                                echo ('<div class="col-2 card cardArcher cardAnim mx-2">');
+                                echo ('<div class="col-2 card cardArcher cardAnim mx-2 mb-4">');
                                 break;
                                 default : 
-                                echo ('<div class="col-2 card cardDefault cardAnim mx-2">');
+                                echo ('<div class="col-2 card cardDefault cardAnim mx-2 mb-4">');
                                 break;
                         }
                         ?>
                                 <legend class="mb-4 text-center"><?=htmlspecialchars($opponent->getName())?></legend>
                                 <div class="row justify-content-around">
-                                    <div class="col-10 text-center">
+                                    <div class="col-11 text-center">
+                                        <h6>Level <?=$opponent->getLevel()?></h6>
                                         <div class="progress">
                                             <?php
                                             if ($opponent->getHealth() < 25) {
@@ -285,10 +331,10 @@ function doHit() {
 
                                 <div class="row justify-content-around">
                                     <div class="col-6 text-center">
-                                        <h6>Level : <?=$opponent->getLevel()?></h6>
+                                        <h6>Strength <?=$opponent->getStrength()?></h6>
                                     </div>
                                     <div class="col-6 text-center">
-                                        <h6>Strength : <?=$opponent->getStrength()?></h6>
+                                        <h6>Magic <?=$opponent->getMagic()?></h6>
                                     </div>
                                 </div>
 
@@ -299,7 +345,7 @@ function doHit() {
                                 </div>
 
                                 <div class="row justify-content-around mt-3">
-                                    <div class="col-12 text-center">
+                                    <div class="col-5 text-center">
                                         <form action="" method="POST">
                                             <input type="hidden" name="hit" value="<?=$opponent->getId()?>">
                                             <button type="submit" class="btn btn-sm">Attack</button>
@@ -317,21 +363,13 @@ function doHit() {
 
     } else {
 
-        echo('
-        <div class="row justify-content-around text-center">
-            <div class="col-6">
-                <legend class="my-3 text-white">Fighters in-game : '.$manager->count().'</legend>
-            </div>
-        </div>
-    ');
 ?>
+        <div class="col-12 text-center mb-5">
+            <h3 class="text-white letsFight">Let's fight !</h3>
+        </div>
+
         <div class="container">
-            <div class="row justify-content-around text-center">
-
-                <div class="col-12 my-5">
-                    <h3 class="text-white letsFight">Let's fight !</h3>
-                </div>
-
+            <div class="row justify-content-around text-center mb-4">
                 <div class="col-4 card cardDark">
                     <div class="col-12 mb-4">
                         <h4>Create new fighter</h4>
@@ -342,9 +380,9 @@ function doHit() {
                             <div class="col-12 mb-4">
                                 <input type="text" name="name" class="mr-3" minlength="2" maxlength="20" placeholder="Name">
                                 <select name="classType" id="classType" required>
-                                    <option value="warrior">Warrior</option>
-                                    <option value="mage">Mage</option>
-                                    <option value="archer">Archer</option>
+                                    <option value="warrior" data-toggle="tooltip" title="Strength gain doubled and Damages halved">Warrior</option>
+                                    <option value="mage" data-toggle="tooltip" title="XP gain and Magic gain doubled">Mage</option>
+                                    <option value="archer" data-toggle="tooltip" title="XP gain doubled and 2 more Actions Points">Archer</option>
                                 </select>
                             </div> 
                         </div> 
@@ -355,19 +393,34 @@ function doHit() {
                         </div>
                     </form>
                 </div>
+            </div>
 
+            <div class="row justify-content-around text-center">
+                <div class="col-6 or">
+                    <h5><b class="text-white">OR</b></h5>
+                </div>
+            </div>
 
+            <div class="row justify-content-around text-center">
                 <div class="col-4 card cardDark">
                     <div class="col-12 mb-4">
                         <h4>Select a character</h4>
                     </div>
 
                     <form action="" method="POST">
-                        <div class="row justify-content-around text-center">      
+                        <div class="row justify-content-around text-center"> 
                             <div class="col-12 mb-4">
-                                <input type="text" name="name" minlength="2" maxlength="20" placeholder="ID or Name">
+                                <select name="fighter" id="fighter" required>
+                                <?php
+                                    $allFighters = $manager->getAllFighters();
+                                    foreach ($allFighters as $fighter) {
+                                        echo ('<option value="'.$fighter['name'].'" data-toggle="tooltip" title="'.ucfirst($fighter['classType']).' level '.$fighter['level'].'">'.$fighter['name'].'</option>');
+                                    }
+                                    ?>
+                                </select>
                             </div> 
-                        </div> 
+                        </div>
+
                         <div class="row justify-content-center text-center">
                             <div class="col-8">
                                 <input type="submit" name="select" class="btn btn-sm mx-3" value="Select"/>
@@ -375,7 +428,12 @@ function doHit() {
                         </div>
                     </form>
                 </div>
+            </div>
 
+            <div class="row justify-content-around text-center mt-5">
+                <div class="col-6">
+                    <legend class="text-white"><?=$manager->count()?> fighters in-game</legend>
+                </div>
             </div>
         </div>
     <?php

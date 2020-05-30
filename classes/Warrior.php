@@ -5,9 +5,9 @@ class Warrior extends Character
     public function takeDamage($str, $classT)
     {
         if ($classT === 'archer') {
-            $this->health -= ceil(((5 + $str) * 2));
-        } else {
             $this->health -= ceil((5 + $str));
+        } else {
+            $this->health -= ceil((5 + $str) /2);
         }
         
         if ($this->health <= 0) {

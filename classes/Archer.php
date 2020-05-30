@@ -17,6 +17,11 @@ class Archer extends Character
         return self::CHARACTER_HIT;
     }
 
+    public function increaseXp()
+    {
+        $this->xp += 2;
+    }
+
     public function hit(Character $opponent) 
     {
         if ($opponent->getId() === $this->id) {
@@ -25,13 +30,8 @@ class Archer extends Character
             $this->increaseXp();
             $this->levelUp();
             $this->increaseHitsCount();
+            $this->changeNextHit();
             $this->changeHitDate();
-            if ($this->getHitsCount() >= 5) {
-                if ($this->token === false) {
-                    $this->changeNextHit();
-                } 
-                $this->switchToken();
-            }
             return $opponent->takeDamage($this->strength, $this->classType);
         }
     }
