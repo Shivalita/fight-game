@@ -1,5 +1,4 @@
 <?php
-
 function loadClass($class)
 {
     require_once('classes/'.$class.'.php');
