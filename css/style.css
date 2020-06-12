@@ -1,32 +1,42 @@
 *,
 *::after,
 *::before {
-margin: 0;
-padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 body, html {
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .bg {
-background-image: url("https://cdn.pixabay.com/photo/2016/11/14/05/26/children-1822701_960_720.jpg");
-height: 100%;
-background-position: 50% 70%;
-background-repeat: no-repeat;
-background-size: 120%;
+    background-image: url("https://cdn.pixabay.com/photo/2016/11/14/05/26/children-1822701_960_720.jpg");
+    position:absolute;
+    width: 100%; 
+    height: 100%;
+    background-position: center;
+    background-repeat: repeat-y;
+    background-size: cover;
+}
+
+#pageContent {
+    position: absolute; 
+    width: 100%; 
+    top: 100%; 
+    height: 100px;
 }
 
 input, select {
     border: 1px solid rgba(15, 15, 15, 0.8);
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    padding: 0.2vw 0.3vw 0.2vw 0.3vw;
+    font-size: 0.8em !important;
+    padding: 0.1em 0.3em 0.1em 0.3em;
 }
 
 select {
-    width: 5vw;
+    width: 5em;
 }
 
 a {
@@ -39,50 +49,80 @@ a:hover {
 }
 
 .btn {
-  position: relative;
-  font-size: 0.7vw;
-  background: rgb(51, 51, 51);
-  color: white;
-  border: 1px solid white;
-  border-radius: 4px;
-  box-shadow: 1px 0px 2px rgba(0, 0, 0, 0.5);
-  transition-duration: 0.2s ease;
+    position: relative;
+    font-size: 0.6em;
+    font-weight: 600;
+    background: rgb(51, 51, 51);
+    color: white;
+    border: 1px solid white;
+    border-radius: 4px;
+    box-shadow: 1px 0px 2px rgba(0, 0, 0, 0.5);
+    transition-duration: 0.2s ease;
 }
 
 .btn:hover, #healBtn:hover {
-  color: rgb(51, 51, 51);
-  background: white;
-  border: 1px solid rgb(51, 51, 51);
+    color: rgb(51, 51, 51);
+    background: white;
+    border: 1px solid rgb(51, 51, 51);
+}
+
+.logoutBtn {
+    margin-top: -5em;
+    margin-right: -13vw;
 }
 
 #healBtn {
     background: #17a2b8;
 }
 
-h3, h6, legend {
+h6 {
+    font-size: 0.8em;
+}
+
+h3, h6 {
     font-weight: 600;
 }
 
-h3, h4, h5, legend {
+h3, h4, h5 {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5), 2px 2px 2px rgba(14, 14, 14, 0.5);
 }
 
+.classType {
+    font-size: 0.95em;
+}
+
+.characterName {
+    margin-top: -1em;
+    margin-bottom: -1em;
+}
+
+.characterLevel, .opponentClass {
+    margin-top: -1em;
+}
+
+.fightersCounter {
+    margin-top: -30px;
+}
+
+.fightersNumber {
+    font-size: 1em;
+}
+
 .letsFight {
-    margin-top: 3vw;
+    margin-top: 1em;
 }
 
 .or {
-    margin-top: 1vw;
-    margin-bottom: 1.3vw;
+    margin-top: 1em;
+    margin-bottom: 1.3em;
 }
 
 .opponents{
-    margin-top: 2vw;
+    margin-top: 2em;
 }
 
 .card {
-    padding: 1vw;
-    margin-top: 0.5vw;
+    padding: 1em;
     border: 1px solid rgba(26, 26, 26, 0.5);
     box-shadow:1px 0px 3px rgba(0, 0, 0, 0.5);
     color: white;
@@ -146,16 +186,15 @@ h3, h4, h5, legend {
 .progress-bar {
     color: rgba(26, 26, 26, 0.9);
     font-weight: 600;
-    font-size: 0.55vw;
+    font-size: 0.7em;
 }
 
 .damages {
-    width: 5vw;
-    font-size: 0.6vw;
+    font-size: 0.6em;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
     background-color: rgba(36, 36, 36, 0.9);
     border: 1px solid white;
     box-shadow:1px 0px 2px rgba(0, 0, 0, 0.5);
     border-radius: 30px;
-    padding: 0.1vw 0vw 0.2vw 0vw;
+    padding: 0.1em 0em 0.2em 0em;
 }

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:3306
--- Généré le : sam. 30 mai 2020 à 20:27
+-- Généré le : ven. 12 juin 2020 à 19:16
 -- Version du serveur :  5.7.24
 -- Version de PHP : 7.2.19
 
@@ -46,10 +46,10 @@ CREATE TABLE `characters` (
 --
 
 INSERT INTO `characters` (`id`, `name`, `health`, `level`, `xp`, `strength`, `magic`, `hitsCount`, `lastHit`, `nextHit`, `classType`) VALUES
-(29, 'Florent', 53, 3, 2, 3, 5, 1, '2020-05-30 21:52:05', NULL, 'mage'),
-(31, 'Pedro', 81, 8, 2, 8, 15, 1, '2020-05-30 22:08:59', NULL, 'mage'),
-(33, 'Alexandre', 24, 7, 5, 7, 7, 5, '2020-05-30 22:06:47', NULL, 'archer'),
-(42, 'Gael', 46, 5, 5, 9, 5, 2, '2020-05-30 22:02:46', NULL, 'warrior');
+(29, 'Florent', 67, 5, 4, 5, 9, 3, '2020-05-31 01:30:14', '2020-05-31 01:32:12', 'mage'),
+(31, 'Pedro', 100, 6, 6, 6, 11, 2, '2020-05-31 01:29:55', NULL, 'mage'),
+(33, 'Alexandre', 24, 5, 6, 5, 5, 1, '2020-05-31 00:00:23', NULL, 'archer'),
+(42, 'Gael', 46, 3, 5, 5, 3, 2, '2020-05-30 22:02:46', NULL, 'warrior');
 
 --
 -- Index pour les tables déchargées
@@ -70,7 +70,7 @@ ALTER TABLE `characters`
 -- AUTO_INCREMENT pour la table `characters`
 --
 ALTER TABLE `characters`
-  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` smallint(5) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
